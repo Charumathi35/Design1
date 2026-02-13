@@ -323,7 +323,15 @@ function initScrollInteraction(threeApp) {
     );
 
     // 3. Fade Out Fog to Reveal Next Section (Pricol Limited)
-    revealTl.to('.fog-sequence-section', { opacity: 0.4, duration: 0.2 }, 0.9);
+    revealTl.to('.fog-sequence-section', { opacity: 0, duration: 0.5 }, 0.8);
+
+    // 4. Fade IN Pricol Limited Canvas (Matching Fog Clear)
+    // This removes the "Grey Shade" by ensuring the image is visible BEHIND the fog
+    revealTl.fromTo('#canvas-limited',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: 'power1.inOut' },
+        0.7 // Start fading in as fog is thickest/clearing
+    );
 
     // --- CLOUD DIVIDER SECTION (Mont-Fort Style) ---
     // 1. Mist Fades IN over Hero
@@ -492,10 +500,15 @@ function initScrollInteraction(threeApp) {
         1: '#canvas-limited',
         2: '#bg-precision',
         3: '#canvas-engineering',
-        4: '#canvas-logistics',
-        5: '#bg-travel',
-        6: '#bg-gourmet',
-        7: '#bg-retreats'
+        4: '#canvas-travel',
+        5: '#bg-bluorb',
+        6: '#canvas-gourmet',
+        7: '#bg-retreats',
+        8: '#bg-durapack',
+        9: '#canvas-logistics',
+        10: '#bg-asia',
+        11: '#bg-surya',
+        12: '#bg-holdings'
     };
 
     // --- PRICOL LIMITED CANVAS ANIMATION ---
@@ -862,8 +875,23 @@ function initScrollInteraction(threeApp) {
                     }
                 });
             }
+            // SPECIAL CASE: Travel Canvas Animation
+            else if (index === 3) { // Pricol Travel is index 3 (0-based) -> section #c4
+                gsap.to(travelImagesCtx, {
+                    currentFrame: travelFrameCount - 1,
+                    snap: "currentFrame",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 0,
+                        onUpdate: () => renderTravelFrame()
+                    }
+                });
+            }
             // SPECIAL CASE: Logistics Canvas Animation
-            else if (index === 3) { // Pricol Logistics is index 3 (0-based) -> section #c4
+            else if (index === 8) { // Pricol Logistics is index 8 (0-based) -> section #c9
                 gsap.to(logisticsImagesCtx, {
                     currentFrame: logisticsFrameCount - 1,
                     snap: "currentFrame",
@@ -874,21 +902,6 @@ function initScrollInteraction(threeApp) {
                         end: "bottom top",
                         scrub: 0,
                         onUpdate: () => renderLogisticsFrame()
-                    }
-                });
-            }
-            // SPECIAL CASE: Travel Canvas Animation
-            else if (index === 4) { // Pricol Travel is index 4 (0-based) -> section #c5
-                gsap.to(travelImagesCtx, {
-                    currentFrame: travelFrameCount - 1,
-                    snap: "currentFrame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0, // Instant scrubbing for video feel
-                        onUpdate: () => renderTravelFrame()
                     }
                 });
             }
@@ -976,10 +989,15 @@ function initScrollInteraction(threeApp) {
             1: '#canvas-limited',
             2: '#bg-precision',
             3: '#canvas-engineering',
-            4: '#canvas-logistics',
-            5: '#canvas-travel',
+            4: '#canvas-travel',
+            5: '#bg-bluorb',
             6: '#canvas-gourmet',
-            7: '#bg-retreats'
+            7: '#bg-retreats',
+            8: '#bg-durapack',
+            9: '#canvas-logistics',
+            10: '#bg-asia',
+            11: '#bg-surya',
+            12: '#bg-holdings'
         };
 
 
@@ -992,14 +1010,73 @@ function initScrollInteraction(threeApp) {
             const el = document.querySelector(targetId);
             if (el) {
                 el.style.opacity = '1';
-                // If it's Engineering, reset to frame 1 initially?
-                if (index === 3) {
-                    // Maybe? Or let scroll trigger handle it.
-                    // It's better to verify source is set to something valid. 
-                }
             }
         }
     }
+
+    // --- GLOBAL FOG TRANSITION LOOP ---
+    // Apply fog wipe between ALL company sections
+    companySections.forEach((section, i) => {
+        // Skip the first transition (handled by Hero -> Pricol Limited logic above)
+        // or we can unify it. But Hero transition is special.
+        // Let's do it for i >= 1 (Pricol Limited -> Pricol Precision and onwards)
+
+        if (i >= 0) { // Actually, let's try to apply it to all transitions between companies?
+            // i=0 is Hero -> Limited (Handled separately in revealTl)
+            // So we want transition exiting section i to section i+1?
+            // Or entering section i+1?
+
+            // Let's trigger it on entering section i+1
+            const nextSection = companySections[i + 1];
+            if (nextSection) {
+                ScrollTrigger.create({
+                    trigger: nextSection,
+                    start: "top bottom", // Starts when next section enters viewport
+                    end: "top 30%",   // Ends later (longer duration)
+                    scrub: 1, // Smooth scrub
+                    onUpdate: (self) => {
+                        // We want:
+                        // 0.0 -> 0.2: Fog Opacity 0 -> 0.75 (Quick Fade In)
+                        // 0.2 -> 0.8: Fog Opacity 0.75 (Hold while sequence plays)
+                        // 0.8 -> 1.0: Fog Opacity 0.75 -> 0 (Fade Out cleanup)
+
+                        const p = self.progress;
+                        const opacityIn = Math.min(1, p / 0.2);
+                        const opacityOut = Math.max(0, (1 - p) / 0.2);
+
+                        // Sequence progress (mapped 0.3 to 0.8) - Wiping after background switch (~0.33)
+                        let frameProgress = (p - 0.3) / 0.5;
+                        frameProgress = Math.max(0, Math.min(1, frameProgress));
+
+                        // Decide Opacity
+                        let finalOpacity = 0;
+                        const maxOpacity = 0.75; // Lighter/Cleaner fog
+
+                        if (p < 0.2) finalOpacity = opacityIn * maxOpacity;
+                        else if (p > 0.8) finalOpacity = opacityOut * maxOpacity;
+                        else finalOpacity = maxOpacity;
+
+                        // Set Canvas Opacity
+                        const fogSection = document.querySelector('.fog-sequence-section');
+                        if (fogSection) { // reuse the same element
+                            fogSection.style.opacity = finalOpacity;
+                        }
+
+                        // Render Frame
+                        // Inverse logic if reusing same frames (or forward?)
+                        // Hero used backwards (length -> 0). Let's stick to that for consistency?
+                        // Or forward? "Wipe" usually implies forward movement.
+                        // Hero was backwards: currentFrame: fogFileList.length - 1 -> 0
+
+                        const frameIndex = (1 - frameProgress) * (fogFileList.length - 1);
+                        fogImagesCtx.currentFrame = frameIndex;
+                        renderFogFrame();
+                    }
+                });
+            }
+        }
+    });
+
 }
 
 // --- CLOUD DUAL SCROLL SEQUENCE (Upward Drift) - V2 ---

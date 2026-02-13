@@ -24,42 +24,67 @@
         <div id="smooth-content">
             <!-- Background Layer System -->
             <div id="background-container">
+                <div class="scroll-shadow-top"></div>
+                <div class="scroll-shadow-bottom"></div>
+                <!-- 1. Limited -->
                 <canvas id="canvas-limited" class="bg-layer"></canvas>
+                <!-- 2. Precision -->
                 <img id="bg-precision" class="bg-layer" src="images/bg-limited.jpg" alt="Pricol Precision" />
+                <!-- 3. Engineering -->
                 <canvas id="canvas-engineering" class="bg-layer"></canvas>
-                <canvas id="canvas-logistics" class="bg-layer"></canvas>
+                <!-- 4. Travel -->
                 <canvas id="canvas-travel" class="bg-layer"></canvas>
+                <!-- 5. Bluorb -->
+                <img id="bg-bluorb" class="bg-layer" src="images/bluorb-final.png" alt="Bluorb" />
+                <!-- 6. Gourmet -->
                 <canvas id="canvas-gourmet" class="bg-layer"></canvas>
+                <!-- 7. Retreats -->
                 <img id="bg-retreats" class="bg-layer" src="images/bg-retreats.jpg" alt="Pricol Retreats" />
+                <!-- 8. Durapack -->
+                <img id="bg-durapack" class="bg-layer" src="images/durapack-gen.png" alt="Pricol Durapack" />
+                <!-- 9. Logistics -->
+                <canvas id="canvas-logistics" class="bg-layer"></canvas>
+                <!-- 10. Asia -->
+                <img id="bg-asia" class="bg-layer" src="images/pricol_asia.png" alt="Pricol Asia" />
+                <!-- 11. Surya -->
+                <img id="bg-surya" class="bg-layer" src="images/pricol_surya.png" alt="Pricol Surya" />
+                <!-- 12. Holdings -->
+                <img id="bg-holdings" class="bg-layer" src="images/pricol_holdings.png" alt="Pricol Holdings" />
+                <!-- 12. Holdings -->
+                <img id="bg-holdings" class="bg-layer" src="images/pricol_holdings.png" alt="Pricol Holdings" />
+            </div>
 
-
+            <!-- Global Fog Transition Canvas (Fixed) -->
+            <div class="fog-sequence-section"
+                style="height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 20; pointer-events: none; opacity: 0;">
+                <canvas id="fog-sequence-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
             </div>
 
             <!-- Atmospheric Fog Layers (Moved Overlay) -->
             <div class="fog-container">
                 <div class="parallax-layer" data-speed="0.1">
                     <div class="fog-layer"
-                        style="background-image: url('images/smoke-background.jpg'); animation: continuousDrift 60s linear infinite; opacity: 0.08;">
+                        style="background-image: url('images/smoke-background.jpg'); animation: foggy 20s linear infinite; opacity: 0.08;">
                     </div>
                 </div>
                 <div class="parallax-layer" data-speed="0.2">
                     <div class="fog-layer"
-                        style="background-image: url('images/smoke-background.jpg'); animation: continuousDriftReverse 50s linear infinite; opacity: 0.06;">
+                        style="background-image: url('images/smoke-background.jpg'); animation: foggy 15s linear infinite; opacity: 0.06;">
                     </div>
                 </div>
                 <div class="parallax-layer" data-speed="0.3">
                     <div class="fog-layer"
-                        style="background-image: url('images/smoke-background.jpg'); animation: continuousDrift 60s linear infinite; opacity: 0.05;">
+                        style="background-image: url('images/smoke-background.jpg'); animation: foggy 25s linear infinite; opacity: 0.05;">
                     </div>
                 </div>
                 <div class="parallax-layer" data-speed="0.4">
                     <div class="fog-layer"
-                        style="background-image: url('images/smoke-background.jpg'); animation: continuousDriftReverse 40s linear infinite; opacity: 0.04;">
+                        style="background-image: url('images/smoke-background.jpg'); animation: foggy 18s linear infinite; opacity: 0.04;">
                     </div>
                 </div>
                 <div class="parallax-layer" data-speed="0.5">
                     <div class="fog-layer"
-                        style="background-image: url('images/smoke-background.jpg'); animation: continuousDrift 30s linear infinite; opacity: 0.03;">
+                        style="background-image: url('images/smoke-background.jpg'); animation: foggy 22s linear infinite; opacity: 0.03;">
                     </div>
                 </div>
             </div>
@@ -93,7 +118,7 @@
                                     </div>
                                 </div> -->
 
-                                <div class="hero-about text-center" style="opacity: 0; margin-top: 2rem;">
+                                <div class="hero-about text-center" style="opacity: 0;">
                                     <p class="desc">
                                         Established in 1975, Pricol Groups is a leading business conglomerate
                                         Headquartered in Coimbatore, India. Pricol commenced its operations in the field
@@ -109,11 +134,7 @@
                     </div>
                 </div>
 
-                <!-- FOG SEQUENCE SECTION -->
-                <section class="fog-sequence-section"
-                    style="height: 100vh; width: 100%; position: absolute; top: 0; left: 0; z-index: 15; background: transparent; pointer-events: none; opacity: 0;">
-                    <canvas id="fog-sequence-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-                </section>
+
             </section>
 
             <!-- Content Overlay-->
@@ -135,10 +156,11 @@
             <section id="c2" class="section company right" data-index="2">
                 <div class="container">
                     <div class="content">
-                        <h3>Precision Engineering</h3>
-                        <p>High-precision components and sub-assemblies for automotive, aerospace, and industrial
-                            applications.</p>
-                        <a href="#" class="visit-link">Visit Website →</a>
+                        <h3>Pricol Precision Products</h3>
+                        <p>We deliver excellence in precision manufacturing, offering high-quality sintered components
+                            and
+                            specialized tooling solutions.</p>
+                        <a href="https://pricolprecision.com/" target="_blank" class="visit-link">Visit Website →</a>
                     </div>
                 </div>
             </section>
@@ -147,7 +169,7 @@
             <section id="c3" class="section company left" data-index="3">
                 <div class="container">
                     <div class="content">
-                        <h3>Engineering Industries</h3>
+                        <h3>Pricol Engineering Industries</h3>
                         <p>Delivering robust heavy engineering solutions, custom fabrication, and large-scale
                             manufacturing for global infrastructure projects.</p>
                         <a href="https://www.pricolengineering.com/" target="_blank" class="visit-link">Visit
@@ -157,23 +179,8 @@
                 </div>
             </section>
 
-            <!-- 4. Logistics -->
+            <!-- 4. Travel (Moved from 5) -->
             <section id="c4" class="section company right" data-index="4">
-                <div class="container">
-                    <div class="content">
-                        <h3>Pricol Logistics</h3>
-                        <p>End-to-end supply chain optimization, freight forwarding, and integrated logistics
-                            services
-                            connecting businesses across borders.</p>
-                        <a href="https://pricollogistics.com/" target="_blank" class="visit-link">Visit
-                            Website
-                            →</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 5. Travel -->
-            <section id="c5" class="section company left" data-index="5">
                 <div class="container">
                     <div class="content">
                         <h3>Pricol Travel</h3>
@@ -181,6 +188,19 @@
                             and seamless itinerary management.</p>
                         <a href="https://pricoltravel.com/" target="_blank" class="visit-link">Visit Website
                             →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Bluorb (New) -->
+            <section id="c5" class="section company left" data-index="5">
+                <div class="container">
+                    <div class="content">
+                        <h3>Bluorb</h3>
+                        <p>Innovative digital solutions for the modern world. We specialize in cutting-edge technology
+                            services
+                            that empower businesses to thrive in the digital age.</p>
+                        <a href="https://bluorb.in/" target="_blank" class="visit-link">Visit Website →</a>
                     </div>
                 </div>
             </section>
@@ -211,6 +231,74 @@
                 </div>
             </section>
 
+            <!-- 8. Durapack (New) -->
+            <section id="c8" class="section company right" data-index="8">
+                <div class="container">
+                    <div class="content">
+                        <h3>Pricol Durapack</h3>
+                        <p>Leading the way in sustainable packaging solutions. We provide high-quality, eco-friendly
+                            packaging
+                            materials designed to protect your products.</p>
+                        <a href="https://pricolpack.com/" target="_blank" class="visit-link">Visit Website →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 9. Logistics (Moved from 4) -->
+            <section id="c9" class="section company left" data-index="9">
+                <div class="container">
+                    <div class="content">
+                        <h3>Pricol Logistics</h3>
+                        <p>End-to-end supply chain optimization, freight forwarding, and integrated logistics
+                            services
+                            connecting businesses across borders.</p>
+                        <a href="https://pricollogistics.com/" target="_blank" class="visit-link">Visit
+                            Website
+                            →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10. Asia (New) -->
+            <section id="c10" class="section company right" data-index="10">
+                <div class="container">
+                    <div class="content">
+                        <h3>Pricol Asia</h3>
+                        <p>Expanding our footprint across the Asian market with diversified business interests. We focus
+                            on
+                            strategic partnerships and regional growth.</p>
+                        <a href="https://www.dnb.com/business-directory/company-profiles.pricol_asia_pte_limited.a80e2946f58c91f8b8085a134bf2a06a.html"
+                            target="_blank" class="visit-link">Visit Website →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 11. Surya (New) -->
+            <section id="c11" class="section company left" data-index="11">
+                <div class="container">
+                    <div class="content">
+                        <h3>Pricol Surya</h3>
+                        <p>Illuminating the future with advanced energy solutions. Our focus lies in renewable energy
+                            projects
+                            and efficient power systems.</p>
+                        <a href="#" class="visit-link">Visit Website →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 12. Holdings (New) -->
+            <section id="c12" class="section company right" data-index="12">
+                <div class="container">
+                    <div class="content">
+                        <h3>Pricol Holdings</h3>
+                        <p>The parent entity driving the vision and strategy for all our group companies. We foster
+                            innovation,
+                            operational excellence, and long-term value creation.</p>
+                        <a href="#" class="visit-link">Visit Website →</a>
+                    </div>
+                </div>
+            </section>
+
             <!-- Footer -->
             <section class="footer" style="position: relative; overflow: hidden;">
 
@@ -236,8 +324,7 @@
                             <span>0422 433 2700</span>
                         </div>
                     </div>
-                    <div class="footer-bottom"
-                        style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; width: 100%;">
+                    <div class="footer-bottom">
                         <p class="copyright" style="margin: 0;">© 2026 Pricol Groups. All rights reserved.</p>
                         <div class="scroll-top-btn" id="scrollTopBtn" style="cursor: pointer;">
                             <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
