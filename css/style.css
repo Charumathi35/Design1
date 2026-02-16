@@ -1258,3 +1258,13 @@ body {
         justify-content: center;
     }
 }
+
+/* SPECIAL CASE: Increase height for Travel Section to fit long animation */
+#c4 {
+    min-height: 250vh;
+}
+
+/* SPECIAL CASE: Increase height for Bluorb Section */
+#c5 {
+    min-height: 250vh;
+}
