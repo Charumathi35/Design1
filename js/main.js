@@ -164,35 +164,9 @@ function initScrollInteraction(threeApp) {
 
     // SCROLL ANIMATION FOR FOG
     // Fade out canvas at the end to reveal content
-    // fogTl.to(fogCanvas, { ... }) - REMOVED
+    // SCROLL ANIMATION FOR FOG - Cleaned up
 
     // FOG SEQUENCE INTEGRATION (Into RevealTl)
-    // 1. Fade In Fog Canvas (Covering the video)
-    // revealTl.to('.fog-sequence-section', { opacity: 0.6, duration: 0.5 }, 0.6);
-
-    // 2. Play Fog Frames (0.6 to 1.0)
-    // revealTl.fromTo(fogImagesCtx,
-    //     { currentFrame: fogFileList.length - 1 },
-    //     {
-    //         currentFrame: 0,
-    //         snap: "currentFrame",
-    //         ease: "none",
-    //         onUpdate: renderFogFrame,
-    //         duration: 0.4
-    //     },
-    //     0.6
-    // );
-
-    // 3. Fade Out Fog to Reveal Next Section (Pricol Limited)
-    // revealTl.to('.fog-sequence-section', { opacity: 0, duration: 0.5 }, 0.8);
-
-    // 4. Fade IN Pricol Limited Canvas (Matching Fog Clear)
-    // This removes the "Grey Shade" by ensuring the image is visible BEHIND the fog
-    // revealTl.fromTo('#canvas-limited',
-    //     { opacity: 0 },
-    //     { opacity: 1, duration: 0.5, ease: 'power1.inOut' },
-    //     0.7 // Start fading in as fog is thickest/clearing
-    // );
 
     // --- CLOUD DIVIDER SECTION (Mont-Fort Style) ---
     // 1. Mist Fades IN over Hero
@@ -211,27 +185,7 @@ function initScrollInteraction(threeApp) {
         }
     });
 
-    // PHASE 1: START (Fog Texture) - Overlapping Hero
-    // cloudTl.to('.fog-start', { opacity: 1, duration: 1, ease: 'power1.in' }, 0);
 
-    // PHASE 2: MID (Transition + Mist) - Blending in
-    // cloudTl.to('.fog-mid', { opacity: 1, duration: 1 }, 0.5); // Overlap slightly
-    // cloudTl.to('.mist-layer', { opacity: 1, stagger: 0.1, duration: 1 }, 0.5); // Mist comes in with transition
-
-    // Parallax Flow (Active throughout middle)
-    // cloudTl.to('.layer-1', { yPercent: 40 }, 0);
-    // cloudTl.to('.layer-2', { yPercent: 30 }, 0);
-
-    // PHASE 3: END (Texture Closure) - Before Content
-    // cloudTl.to('.fog-end', { opacity: 1, duration: 1 }, 2);
-
-    // PHASE 4: CLEARING (Fade out ALL fog to reveal text)
-    // We group them to fade out together for a clean reveal
-    // cloudTl.to(['.mist-background'], {
-    //     opacity: 0,
-    //     duration: 1.5,
-    //     ease: 'power2.inOut'
-    // }, 3.5); // Late in the scroll timeline
 
     // 2. Content Reveal (Emerges CLEARLY after mist is gone/fading)
     // The content section is padded down, so it naturally appears later in the scroll.
@@ -293,11 +247,7 @@ function initScrollInteraction(threeApp) {
         }
     }, 0);
 
-    // ZOOM INTO PRICOL LIMITED (Transition) - REMOVED
-    // revealTl.to('#intro-canvas', { scale: 5, ... });
 
-    // ZOOM into Mist (Sudden) - REMOVED
-    // revealTl.to('#intro-canvas', { scale: 15, ... });
 
     // 4. CROSS-FADE: Fade IN Pricol Limited Canvas to prevent white screen
     // Start much earlier to ensure it's visible before Intro fades
@@ -535,20 +485,31 @@ function initScrollInteraction(threeApp) {
         const h3 = content.querySelector('h3');
         const p = content.querySelector('p');
 
-        // 1. Staggered Text Reveal (Timeline)
+        // 1. Staggered Text Reveal (INSTANT / NO DELAY)
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: section,
-                start: 'top bottom', // Syncs exactly with background start
-                end: 'top 60%',      // Finishes earlier for faster apperance
-                scrub: 1
+                start: 'top center', // SYNCHRONIZED with background change
+                end: 'bottom 20%',
+                toggleActions: 'play reverse play reverse'
             }
         });
 
-        // Reduced y-offset and duration for snappier feel
-        tl.from(content, { y: 50, opacity: 0, duration: 0.6 })
-            .from(h3, { y: 20, opacity: 0, duration: 0.4 }, "-=0.2")
-            .from(p, { y: 20, opacity: 0, duration: 0.4 }, "-=0.2");
+        // Near Instant Reveal
+        tl.fromTo(content,
+            { y: 50, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.3, ease: 'power1.out' }
+        )
+            .fromTo(h3,
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.2, ease: 'power1.out' },
+                "-=0.25" // Start BEFORE content finishes
+            )
+            .fromTo(p,
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.2, ease: 'power1.out' },
+                "-=0.15"
+            );
 
         // 2. Parallax Effect REMOVED per user request ("content getting upside")
 
@@ -566,8 +527,12 @@ function initScrollInteraction(threeApp) {
                 const rotateX = ((y - centerY) / centerY) * -10; // Max rotation deg
                 const rotateY = ((x - centerX) / centerX) * 10;
 
+                // Use GSAP props to avoid overwriting "y" transform from entrance
                 gsap.to(content, {
-                    transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
+                    rotationX: rotateX,
+                    rotationY: rotateY,
+                    scale: 1.02,
+                    perspective: 1000, // Applied to transform
                     duration: 0.4,
                     ease: 'power2.out'
                 });
@@ -575,9 +540,11 @@ function initScrollInteraction(threeApp) {
 
             section.addEventListener('mouseleave', () => {
                 gsap.to(content, {
-                    transform: `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`,
-                    duration: 0.8,
-                    ease: 'elastic.out(1, 0.5)'
+                    rotationX: 0,
+                    rotationY: 0,
+                    scale: 1,
+                    duration: 0.5,
+                    ease: 'power2.out'
                 });
             });
         }
@@ -585,15 +552,30 @@ function initScrollInteraction(threeApp) {
         const sectionIndex = index + 1;
         const bgId = bgMap[sectionIndex];
 
-        // Background Animation (Zoom/Parallax)
+        // Background Animation (Zoom/Parallax & Canvas Sequence)
         if (bgId) {
             const bgEl = document.querySelector(bgId);
 
-            // SPECIAL CASE: Pricol Limited Canvas Animation
-            if (index === 0) {
+            // 1. Canvas Sequences (Pricol Limited, Precision, etc.)
+            // Map index (0-based) to sequence instance
+            const sequenceCtx = {
+                0: limitedSequence,
+                1: precisionSequence,
+                2: engineeringSequence,
+                3: travelSequence,
+                4: bluorbSequence,
+                5: gourmetSequence,
+                6: retreatsSequence,
+                7: durapackSequence,
+                8: logisticsSequence
+            };
+
+            const seq = sequenceCtx[index];
+
+            if (seq) {
                 const obj = { frame: 0 };
                 gsap.to(obj, {
-                    frame: limitedSequence.frameCount - 1,
+                    frame: seq.frameCount - 1,
                     snap: "frame",
                     ease: "none",
                     scrollTrigger: {
@@ -601,155 +583,28 @@ function initScrollInteraction(threeApp) {
                         start: "top bottom",
                         end: "bottom top",
                         scrub: 0,
-                        onUpdate: () => limitedSequence.render(obj.frame)
+                        onUpdate: () => seq.render(obj.frame)
                     }
                 });
-            }
-            // SPECIAL CASE: Precision Canvas Animation
-            else if (index === 1) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: precisionSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => precisionSequence.render(obj.frame)
+            } else if (index === 9) {
+                // SPECIAL CASE: Pricol Asia (Image Zoom)
+                // Pricol Asia is index 9 (0-based) -> section #c10
+                gsap.fromTo(bgEl,
+                    { scale: 1.0, y: 0 },
+                    {
+                        scale: 1.15,
+                        y: 50,
+                        ease: 'none',
+                        scrollTrigger: {
+                            trigger: section,
+                            start: 'top bottom',
+                            end: 'bottom top',
+                            scrub: true
+                        }
                     }
-                });
-            }
-            // SPECIAL CASE: Engineering Canvas Animation
-            else if (index === 2) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: engineeringSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => engineeringSequence.render(obj.frame)
-                    }
-                });
-            }
-            // SPECIAL CASE: Travel Canvas Animation
-            else if (index === 3) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: travelSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => travelSequence.render(obj.frame)
-                    }
-                });
-            }
-            // SPECIAL CASE: Bluorb Canvas Animation
-            else if (index === 4) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: bluorbSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => bluorbSequence.render(obj.frame)
-                    }
-                });
-            }
-            // SPECIAL CASE: Logistics Canvas Animation
-            else if (index === 8) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: logisticsSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => logisticsSequence.render(obj.frame)
-                    }
-                });
-            }
-            // SPECIAL CASE: Gourmet Canvas Animation
-            else if (index === 5) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: gourmetSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => gourmetSequence.render(obj.frame)
-                    }
-                });
-            }
-            // SPECIAL CASE: Retreats Canvas Animation
-            else if (index === 6) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: retreatsSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => retreatsSequence.render(obj.frame)
-                    }
-                });
-            }
-            // SPECIAL CASE: Durapack Canvas Animation
-            else if (index === 7) {
-                const obj = { frame: 0 };
-                gsap.to(obj, {
-                    frame: durapackSequence.frameCount - 1,
-                    snap: "frame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => durapackSequence.render(obj.frame)
-                    }
-                });
-            }
-            // SPECIAL CASE: Logistics Canvas Animation
-            else if (index === 8) { // Pricol Logistics is index 8 (0-based) -> section #c9
-                gsap.to(logisticsImagesCtx, {
-                    currentFrame: logisticsFrameCount - 1,
-                    snap: "currentFrame",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 0,
-                        onUpdate: () => renderLogisticsFrame()
-                    }
-                });
-            }
-            // SPECIAL CASE: Pricol Asia Animation (Image Zoom)
-            else if (index === 9) { // Pricol Asia is index 9 (0-based) -> section #c10
+                );
+            } else if (bgEl && bgEl.tagName !== 'CANVAS') {
+                // Shared Zoom Effect for Standard Images (Holdings, Surya, etc)
                 gsap.fromTo(bgEl,
                     { scale: 1.0, y: 0 },
                     {
@@ -765,107 +620,67 @@ function initScrollInteraction(threeApp) {
                     }
                 );
             }
-            else if (bgEl && bgEl.tagName !== 'CANVAS') {
-                // Shared Zoom Effect for Standard Images
-                const anim = gsap.fromTo(bgEl,
-                    { scale: 1.0, y: 0 },
-                    {
-                        scale: 1.15,
-                        y: 50,
-                        ease: 'none',
-                        scrollTrigger: {
-                            trigger: section,
-                            start: 'top bottom',
-                            end: 'bottom top',
-                            scrub: true
-                        }
-                    }
-                );
-            }
-
-            // 1. Staggered Text Reveal (Timeline)
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: section,
-                    start: 'top bottom', // Syncs exactly with background start
-                    end: 'top 75%',      // Finishes MUCH earlier (was 60%) for immediate visibility
-                    scrub: 1
-                }
-            });
-
-            // Reduced y-offset and duration for snappier feel
-            tl.from(content, { y: 30, opacity: 0, duration: 0.5 })
-                .from(h3, { y: 15, opacity: 0, duration: 0.3 }, "-=0.2")
-                .from(p, { y: 15, opacity: 0, duration: 0.3 }, "-=0.2");
-
-            // Background Focus & Image Swap
-            ScrollTrigger.create({
-                trigger: section,
-                start: "top center", // Delay switch until section is dominant
-                end: "bottom center",
-                onEnter: () => {
-                    threeApp.highlightSection(index + 1);
-                    updateBackground(index + 1);
-                },
-                onEnterBack: () => {
-                    threeApp.highlightSection(index + 1);
-                    updateBackground(index + 1);
-                },
-                onLeave: () => {
-                    // Optional: Fade out if leaving into footer?
-                    // Mostly handled by next section's onEnter
-                },
-                onLeaveBack: () => {
-                    // If going back up to Hero (index 0)
-                    if (index === 0) updateBackground(0);
-                }
-            });
         }
 
-    });
-
-    // Handle Hero Background (Index 0)
-    ScrollTrigger.create({
-        trigger: '.hero',
-        start: 'top center',
-        onEnter: () => updateBackground(0),
-        onEnterBack: () => updateBackground(0)
-    });
-
-    // --- FOOTER ---
-    gsap.from('.footer .container', {
-        scrollTrigger: {
-            trigger: '.footer',
-            start: 'top 90%',
-        },
-        y: 30, opacity: 0, duration: 1
-    });
-
-    // Helper for Background Switching
-    function updateBackground(index) {
-        // Use global bgMap
-
-        // Reset all specific layers to opacity 0
-        document.querySelectorAll('.bg-layer').forEach(el => el.style.opacity = '0');
-
-        // Activate specific layer if exists
-        const targetId = bgMap[index];
-        if (targetId) {
-            const el = document.querySelector(targetId);
-            if (el) {
-                el.style.opacity = '1';
-            }
-        }
     }
 
-    // Reset to Hero when scrolling back to top
+    // Background Focus & Image Swap (Inside Loop)
     ScrollTrigger.create({
-        trigger: 'body',
-        start: 'top 100px',
+        trigger: section,
+        start: "top center", // Delay switch until section is dominant
+        end: "bottom center",
+        onEnter: () => {
+            if (threeApp && threeApp.highlightSection) threeApp.highlightSection(index + 1);
+            updateBackground(index + 1);
+        },
+        onEnterBack: () => {
+            if (threeApp && threeApp.highlightSection) threeApp.highlightSection(index + 1);
+            updateBackground(index + 1);
+        },
+        onLeave: () => {
+            // Optional cleanup
+        },
         onLeaveBack: () => {
-            if (window.threeApp) window.threeApp.highlightSection(0);
+            // If going back up to Hero (index 0)
+            if (index === 0) updateBackground(0);
         }
     });
+});
+
+// --- FOOTER ---
+gsap.from('.footer .container', {
+    scrollTrigger: {
+        trigger: '.footer',
+        start: 'top 90%',
+    },
+    y: 30, opacity: 0, duration: 1
+});
+
+// Helper for Background Switching
+function updateBackground(index) {
+    // Use global bgMap
+
+    // Reset all specific layers to opacity 0
+    document.querySelectorAll('.bg-layer').forEach(el => el.style.opacity = '0');
+
+    // Activate specific layer if exists
+    const targetId = bgMap[index];
+    if (targetId) {
+        const el = document.querySelector(targetId);
+        if (el) {
+            el.style.opacity = '1';
+        }
+    }
+}
+
+// Reset to Hero when scrolling back to top
+ScrollTrigger.create({
+    trigger: 'body',
+    start: 'top 100px',
+    onLeaveBack: () => {
+        if (window.threeApp) window.threeApp.highlightSection(0);
+    }
+});
     // Apply fog wipe between ALL company sections
     // companySections.forEach((section, i) => {
     //     // Skip the first transition (handled by Hero -> Pricol Limited logic above)
@@ -1053,31 +868,35 @@ function initAtmosphericEffects() {
         // Force render of the active canvas sequence
         if (activeIndex > 0) {
             const sequenceMap = {
-                1: limitedSequence,
-                2: precisionSequence,
-                3: engineeringSequence,
-                4: travelSequence,
-                5: bluorbSequence,
-                6: gourmetSequence,
-                7: retreatsSequence,
-                8: durapackSequence,
-                9: logisticsSequence
+                1: limitedSequence, 2: precisionSequence, 3: engineeringSequence,
+                4: travelSequence, 5: bluorbSequence, 6: gourmetSequence,
+                7: retreatsSequence, 8: durapackSequence, 9: logisticsSequence
             };
             const seq = sequenceMap[activeIndex];
             if (seq) {
-                // Calculate progress based on scroll trigger logic manually for a rough start
-                // Or better, let ScrollTrigger.refresh() handle it, but we force a render
-                // We can try to get the progress from the timeline if possible, but cleaner is:
-                // The ScrollTrigger's onUpdate will fire on refresh(), hopefully. 
-                // If not, we set a safe default or try to compute it.
-                // For now, let's just make sure the canvas is at least cleared/resized/rendered frame 0 if nothing else.
-                // But ideally, we want the CORRECT frame.
+                // Calculate manual progress to ensure *something* shows immediately
+                // This prevents white flash before GSAP kicks in
+                const section = companySections[activeIndex - 1]; // 0-indexed
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    // Simple estimation: how far into the section are we?
+                    // 0 = top at bottom of screen, 1 = bottom at top of screen roughly
+                    // But our scrollTrigger logic is specific. 
+                    // Let's just force frame 0 or middle frame to ensure canvas isn't blank
 
-                // GSAP ScrollTrigger refresh should trigger onUpdate updates if we are in the middle.
-                // Let's rely on ScrollTrigger.refresh() which is called in window resize/load.
-                // But we MUST ensure the BG opacities are set (done by updateBackground above).
+                    // Force resize first
+                    seq.resize();
+
+                    // Attempt to sync with GSAP immediately
+                    ScrollTrigger.refresh();
+                }
             }
         }
+
+        // Final catch-all refresh to ensure all triggers are correct
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 100);
     }
 
     // Call restoration logic after a short delay to ensure layout is settled
