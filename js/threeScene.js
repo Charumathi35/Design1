@@ -42,7 +42,7 @@ class ThreeScene {
 
         this.loadTextures().then(() => {
             this.createCloudBackground(); // New Cloud Layer
-            this.loadMountains(); // Load 3D Mountains
+            // this.loadMountains(); // Load 3D Mountains (DISABLED - Missing Asset)
             // Initialize Stories
             this.createStoryHero(); // Base Industrial Layer
             this.createStoryLimited();
@@ -60,9 +60,9 @@ class ThreeScene {
 
     createScene() {
         this.scene = new THREE.Scene();
-        // Dark Blue Fog to blend with clouds (Match site theme)
-        this.scene.background = new THREE.Color(0x002250);
-        this.scene.fog = new THREE.FogExp2(0x002250, 0.015);
+        // White Background for positive view
+        this.scene.background = new THREE.Color(0xffffff);
+        this.scene.fog = new THREE.FogExp2(0xffffff, 0.015);
     }
 
     createCamera() {
@@ -89,9 +89,6 @@ class ThreeScene {
         return new Promise((resolve) => {
             const loader = new THREE.TextureLoader();
             const images = {
-                limited: 'images/bg-limited.jpg',
-                engineering: 'images/bg-engineering.jpg',
-                logistics: 'images/bg-logistics.jpg',
                 gourmet: 'images/bg-gourmet.jpg',
                 clouds: 'images/cloud-pattern.png' // New Pattern
             };
@@ -495,6 +492,8 @@ class ThreeScene {
     }
 
     loadMountains() {
+        // DISABLED: Asset missing
+        /*
         const loader = new THREE.GLTFLoader();
         loader.load('images/mountains.glb', (gltf) => {
             this.mountains = gltf.scene;
@@ -520,25 +519,62 @@ class ThreeScene {
         }, undefined, (error) => {
             console.error('Error loading mountains:', error);
         });
+        */
     }
 
-    animate() {
-        requestAnimationFrame(this.animate.bind(this));
+    // Unified Render Method (Called by GSAP Ticker)
+    render() {
+        if (!this.camera || !this.scene || !this.renderer) return;
 
-        const time = performance.now() * 0.001;
+        const deltaTime = this.clock.getDelta();
+        const time = this.clock.getElapsedTime();
 
-        // Rotate Hero
-        if (this.stories.hero.visible) this.stories.hero.rotation.y = time * 0.05;
+        // Update Uniforms
+        if (this.fogMaterial) {
+            this.fogMaterial.uniforms.uTime.value = time;
+            // Update fog density based on scroll (if needed here, currently driven by GSAP)
+        }
 
-        // Animate Image Planes (Float)
-        ['limited', 'engineering', 'logistics', 'gourmet'].forEach(key => {
-            const grp = this.stories[key];
-            if (grp && grp.visible && grp.userData.plane) {
-                grp.userData.plane.position.y += Math.sin(time + 1) * 0.002;
-            }
-        });
+        // Float animation for particles
+        if (this.particles) {
+            this.particles.rotation.y = time * 0.05;
+        }
 
+        // Render
         this.renderer.render(this.scene, this.camera);
+    }
+
+    // Initialize (Updated to not start own loop)
+    // Initialize (Restored)
+    init() {
+        try {
+            this.createScene();
+            this.createCamera();
+            this.createRenderer();
+
+            this.loadTextures().then(() => {
+                this.createCloudBackground();
+                // Initialize Stories
+                this.createStoryHero();
+                this.createStoryLimited();
+                this.createStoryEngineering();
+                this.createStoryLogistics();
+                this.createStoryGourmet();
+                this.createStoryPrecision();
+                this.createStoryRetreats();
+
+                this.createLighting();
+                this.addListeners();
+
+                // Interaction
+                if (this.camera && this.renderer) {
+                    this.inputCleanup = initScrollInteraction(this.camera, this.renderer.domElement);
+                }
+            });
+
+        } catch (error) {
+            console.error("Error in ThreeScene init:", error);
+        }
     }
 }
 window.ThreeScene = ThreeScene;

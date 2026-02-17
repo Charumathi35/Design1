@@ -1,11 +1,11 @@
 :root {
-    --bg-color: #002250;
+    --bg-color: #ffffff;
     /* Light White/Grey */
     --text-primary: #0072bc;
 
     --title: #0072bc;
     /* Dark Navy for Headers */
-    --text-secondary: #546e7a;
+    --text-secondary: #37474f;
     /* Grey Blue for Body */
     --pricol-blue: #0277bd;
     /* Strong Blue for Accents */
@@ -14,8 +14,8 @@
     --accent-green: #2e7d32;
     --accent-yellow: #fbc02d;
 
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Outfit', sans-serif;
+    --font-heading: 'Roboto', sans-serif;
+    --font-body: 'Roboto', sans-serif;
     --spacing-container: clamp(20px, 5vw, 50px);
 }
 
@@ -115,10 +115,7 @@
     /* Above base fog, but below moving fog layers */
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
-
-    /* Above base fog, but below moving fog layers */
-    opacity: 0;
-    transition: opacity 0.8s ease-in-out;
+    will-change: opacity, transform;
 
     /* Digital Enhancement: Unsharp Mask + Color Boost */
     filter: contrast(1.1) saturate(1.2) url(#sharpen-view);
@@ -222,6 +219,8 @@ body {
     background: transparent !important;
     color: var(--text-secondary);
     font-family: var(--font-body);
+    font-size: 14px;
+    /* Set base font size to small */
     overflow-x: hidden;
     /* Fix capital X to lowercase x */
     min-height: auto;
@@ -407,7 +406,8 @@ body {
 }
 
 .hero-left h1 {
-    font-size: clamp(3.5rem, 6vw, 6rem);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    /* Reduced from 3.5rem/6rem */
     font-weight: 800;
     font-style: italic;
     color: var(--text-primary);
@@ -420,8 +420,8 @@ body {
 .hero-brand .text-title {
     color: #ffffff !important;
     /* Visible against dark background */
-    font-size: 4rem;
-    /* Bigger text */
+    font-size: 3rem;
+    /* Reduced from 4rem */
     font-weight: 700;
     margin-bottom: 2rem;
 }
@@ -583,8 +583,9 @@ body {
 /* Ensure empty space for 3D visual */
 .company.left .content,
 .company.right .content {
-    background: rgba(120, 120, 120, 0.3);
-    /* Lighter Grey (Matching Hero) */
+    background: rgba(135, 206, 250, 0.2);
+    /* Mild Sky Blue Transparent */
+    /* Lighter Grey (Matching Hero) - REMOVED */
     padding: 2.5rem;
     /* Increased padding */
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -594,11 +595,18 @@ body {
     position: relative;
     border-radius: 20px;
     /* Rounded like Hero */
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     /* Glassmorphism */
     box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
+    will-change: transform, opacity;
+
+    /* Force Left Align for ALL */
+    text-align: left;
+    align-items: flex-start;
 }
 
 .company.left .content:hover,
@@ -607,50 +615,63 @@ body {
 }
 
 .company .content h3 {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.company .content h3 a {
     color: #fff;
     font-weight: 800;
-    font-size: 2.2rem;
-    /* Reduced from 3.5rem */
-    margin-bottom: 1rem;
+    font-size: 1.5rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    display: inline-flex;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    width: 100%;
     gap: 15px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 /* Arrow Circle */
-.company .content h3::after {
+/* Arrow Circle on the Link */
+.company .content h3 a::after {
     content: '→';
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border: 2px solid #fff;
     border-radius: 50%;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: #fff;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
     flex-shrink: 0;
-    /* Prevent oval shape */
+    margin-left: 10px;
 }
 
-.company .content:hover h3::after {
+.company .content:hover h3 a::after {
     background: var(--pricol-blue);
     color: #fff;
     transform: rotate(-45deg);
+    border-color: var(--pricol-blue);
+}
+
+.company .content:hover h3 a {
+    color: var(--title);
 }
 
 .company .content p {
     color: #f5f7fa;
-    font-size: 1.1rem;
-    /* Reduced from 1.5rem */
+    font-size: 0.9rem;
+    /* Reduced from 1.1rem */
     font-weight: 400;
-    line-height: 1.8;
+    line-height: 1.6;
     border-top: 2px solid rgba(255, 255, 255, 0.5);
     padding-top: 20px;
     max-width: 90%;
@@ -658,18 +679,9 @@ body {
 }
 
 /* Visit Link Button Style */
+/* Visit Link Button Style - REMOVE or HIDE */
 .visit-link {
-    display: inline-block;
-    margin-top: 1.5rem;
-    padding: 0.8rem 1.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    display: none;
 }
 
 .visit-link:hover {
@@ -679,35 +691,15 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Right Alignment Specifics - NOW LEFT ALIGNED PER REQUEST */
-.company.right .content {
-    /* text-align: right; -- REMOVED */
-    /* align-items: flex-end; -- REMOVED */
-    text-align: left;
-    align-items: flex-start;
-}
+/* Right Alignment Specifics - REMOVED, UNIFYING TO LEFT */
+/* Right Alignment Specifics - REMOVED, UNIFYING TO LEFT */
+/* Right Alignment Specifics - REMOVED, UNIFYING TO LEFT */
+/* Right Alignment Specifics - REMOVED, UNIFYING TO LEFT */
 
-.company.right .content h3 {
-    /* flex-direction: row-reverse; -- REMOVED */
-    flex-direction: row;
-}
-
-/* Arrow on Left of text? Or keep standard? Let's flip for symmetry */
-.company.right .content h3::after {
-    /* transform: rotate(180deg); -- REMOVED */
-    transform: rotate(0deg);
-}
-
-.company.right .content:hover h3::after {
-    /* transform: rotate(225deg); -- REMOVED */
-    transform: rotate(-45deg);
-}
-
-/* -135deg visually */
+/* The empty rules were here */
 
 .company.right .content p {
     margin-left: 0;
-    /* Reset */
 }
 
 /* Push text to right edge */
@@ -813,9 +805,10 @@ body {
 
     /* Ensure content has background on mobile to read over 3D if overlaps */
     .company .content {
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(135, 206, 250, 0.5);
+        /* Slightly clearer on mobile? */
         backdrop-filter: blur(10px);
-        padding: 30px;
+        padding: 25px;
         border-radius: 10px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     }
@@ -1178,22 +1171,39 @@ body {
 
 .contact-item {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: flex-start;
+    /* Align to top for multi-line text */
+    gap: 0.8rem;
+    text-align: left;
+    /* Ensure text aligns left */
+}
+
+/* Icon specific adjustment if needed */
+.contact-item i,
+.contact-item svg {
+    margin-top: 4px;
+    /* Optical alignment with first line of text */
+    flex-shrink: 0;
+    /* Prevent icon shrinking */
 }
 
 .footer-bottom {
     position: relative;
     width: 100%;
-    margin-top: 0.5rem;
+    margin-top: 1.5rem;
+    /* More space */
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 0 50px;
+    /* Space for the absolute button */
 }
 
 .footer-bottom .copyright {
     margin: 0;
     text-align: center;
+    font-size: 0.85rem;
+    line-height: 1.4;
 }
 
 .scroll-top-btn {
@@ -1201,6 +1211,22 @@ body {
     right: 0;
     top: 50%;
     transform: translateY(-50%);
+}
+
+@media (max-width: 600px) {
+    .footer-bottom {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0;
+    }
+
+    .scroll-top-btn {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        margin-top: 10px;
+    }
 }
 
 /* Hero Text Card */
